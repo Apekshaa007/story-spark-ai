@@ -15,6 +15,7 @@ const pricingPlans = [
     buttonStyle:
       "bg-gray-600 text-gray-200 hover:bg-gray-500 hover:shadow-gray-500/20",
     highlight: false,
+    // FIX 1: Free plan → goes to signup, no payment needed
     linkto: "/signup",
   },
   {
@@ -27,12 +28,12 @@ const pricingPlans = [
       "Priority support",
       "Analytics dashboard",
     ],
-
     buttonLabel: "Start Pro Trial",
     buttonStyle:
       "bg-indigo-600 text-white hover:bg-indigo-500 hover:shadow-indigo-500/30",
     highlight: true,
-    linkto: "/payment",
+    // FIX 2: Pass plan name and price as URL params so PaymentComponent can read them
+    linkto: "/payment?plan=Pro&price=19",
   },
   {
     title: "Enterprise",
@@ -48,12 +49,14 @@ const pricingPlans = [
     buttonStyle:
       "bg-slate-800 text-white hover:bg-slate-700 hover:shadow-blue-500/20",
     highlight: false,
-    linkto: "/payment",
+    // FIX 3: Enterprise → goes to /sales, NOT /payment
+    linkto: "/sales",
   },
 ];
 
 const PricingComponent = () => {
   const navigate = useNavigate();
+
   return (
     <section className="mb-16 py-12" id="pricing-section">
       <div className="text-center mb-12">
@@ -64,6 +67,7 @@ const PricingComponent = () => {
           Choose the plan that best fits your needs
         </p>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
         {pricingPlans.map((plan, index) => (
           <div
@@ -90,13 +94,18 @@ const PricingComponent = () => {
                 Popular
               </div>
             )}
+
             <h3 className="text-xl font-semibold mb-2 text-gray-300">
               {plan.title}
             </h3>
+
             <div className="mb-4">
-              <span className="text-4xl font-bold text-gray-300">{plan.price}</span>
+              <span className="text-4xl font-bold text-gray-300">
+                {plan.price}
+              </span>
               <span className="text-gray-500">{plan.duration}</span>
             </div>
+
             <ul className="space-y-3 mb-8 text-gray-500">
               {plan.features.map((feature, i) => (
                 <li key={i} className="flex items-center">
@@ -105,11 +114,10 @@ const PricingComponent = () => {
                 </li>
               ))}
             </ul>
+
             <button
-              className={`motion-cta mt-6 block w-full text-center font-medium py-2.5 px-4 rounded-lg shadow-lg ${plan.buttonStyle}`}
-              onClick={() => {
-                navigate(plan.linkto);
-              }}
+              className={`motion-cta mt-6 block w-full text-center font-medium py-2.5 px-4 rounded-lg shadow-lg transition-all duration-200 ${plan.buttonStyle}`}
+              onClick={() => navigate(plan.linkto)}
             >
               {plan.buttonLabel}
             </button>
