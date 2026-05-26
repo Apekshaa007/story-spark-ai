@@ -4,6 +4,7 @@ import { User } from "../user/user.model";
 import { IPost, IPostPayload, IPostSearchFields } from "./post.interface";
 import httpStatus from "http-status";
 import { Post } from "./post.model";
+import { StoryVersionService } from "../story_version/story_version.service";
 import {
   IGenericResponse,
   IPaginationOptions,
@@ -228,6 +229,51 @@ const toggleBookmark = async (postId: string, token: ITokenPayload) => {
   }
 };
 
+const updatePost = async (
+  postId: string,
+  payload: Partial<IPostPayload> & { prompt?: string; generationType?: string },
+  token: ITokenPayload
+) => {
+  const { email } = token;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found!");
+  }
+
+  const post = await Post.findById(postId);
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Post not found!");
+  }
+
+  // Enforce ownership
+  if (
+    post.author.toString() !== user._id.toString() &&
+    user.role !== "admin" &&
+    user.role !== "super_admin"
+  ) {
+    throw new ApiError(httpStatus.FORBIDDEN, "You do not have permission to edit this story!");
+  }
+
+  // Automatically create version snapshot of the current state BEFORE overwriting
+  await StoryVersionService.createVersionSnapshot(
+    postId,
+    payload.prompt || "",
+    payload.generationType || "edited",
+    user._id.toString()
+  );
+
+  // Overwrite post content
+  if (payload.title !== undefined) post.title = payload.title;
+  if (payload.content !== undefined) post.content = payload.content;
+  if (payload.tag !== undefined) post.tag = payload.tag;
+  if (payload.topic !== undefined) post.topic = payload.topic;
+
+  post.updatedBy = user._id;
+  await post.save();
+
+  return post;
+};
+
 export const PostService = {
   createPost,
   getPosts,
@@ -237,4 +283,6 @@ export const PostService = {
   getSinglePost,
   getPostsByTag,
   toggleBookmark,
+  updatePost,
 };
+
