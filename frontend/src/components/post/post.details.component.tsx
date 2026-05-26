@@ -2,6 +2,7 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import {
+  useDeletePostMutation,
   useGetPostByIdQuery,
   useGetPostByTagQuery,
 } from "../../redux/apis/post.api";
@@ -34,17 +35,19 @@ const PostDetailsComponent = () => {
   const { data: post, isLoading } = useGetPostByIdQuery(id || "");
 
   const tag = post?.tag;
-
   const { data: relatedPost } = useGetPostByTagQuery({
     tag: tag || "",
     excludeId: post?._id || "",
   });
 
   const [toggleReaction] = useToggleReactionMutation();
-
+  const [deletePost, { isLoading: isDeleting }] = useDeletePostMutation();
   const currentUser = getUserInfo();
 
   const authorId = post?.author?._id;
+  const isOwner = Boolean(
+    currentUser?.email && post?.author?.email === currentUser.email
+  );
 
   const { data: followData } = useGetFollowStatusQuery(authorId || "", {
     skip: !authorId || !currentUser,
@@ -125,6 +128,25 @@ const PostDetailsComponent = () => {
     window.location.href = url;
   };
 
+  const handleDelete = async () => {
+    if (
+      !id ||
+      !window.confirm(
+        "Remove this story from public view? It will remain available for reporting."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await deletePost(id).unwrap();
+      toast.success("Story removed successfully.");
+      navigate("/explore");
+    } catch {
+      toast.error("Unable to remove this story. Please try again.");
+    }
+  };
+
   if (isLoading) {
     return <LoadingAnimation />;
   }
@@ -162,9 +184,18 @@ const PostDetailsComponent = () => {
                   </div>
                 </div>
               </div>
-
               <div>
-                {currentUser && authorId !== currentUser?.userId && (
+                {isOwner && (
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="mt-2 mr-3 rounded border border-red-500/40 px-4 py-1 text-sm text-red-300 transition-all hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isDeleting ? "Removing..." : "Remove Story"}
+                  </button>
+                )}
+                {currentUser && !isOwner && (
                   <button
                     onClick={handleFollow}
                     className={`mt-2 rounded px-4 py-1 text-sm cursor-pointer transition-all ${

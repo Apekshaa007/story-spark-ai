@@ -21,6 +21,9 @@ export interface IPost extends IPostPayload {
   viewsCount: number;
   isPublished: boolean;
   isFeaturedPost?: boolean;
+  isDeleted?: boolean;
+  deletedAt?: Date;
+  deletedBy?: Types.ObjectId;
   publishedAt?: Date;
   updatedBy?: Types.ObjectId;
   attachments?: string[];
