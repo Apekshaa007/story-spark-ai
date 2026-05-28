@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../assets/logoNew.png";
 
+const DEFAULT_GITHUB_ISSUES_URL = "https://github.com/ronisarkarexe/story-spark-ai/issues";
+
 const FooterComponent = () => {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -46,12 +48,15 @@ const FooterComponent = () => {
     { label: "Contact",  to: "/contact-us"},
   ];
 
+  const githubIssuesUrl =
+    import.meta.env.VITE_GITHUB_REPO_ISSUES_URL || DEFAULT_GITHUB_ISSUES_URL;
+
   const resourceLinks = [
     { label: "Blog",         to: "/blog"        },
     { label: "Help Center",  to: "/help"        },
     { label: "Community",    to: "/community"   },
     { label: "Contributors", to: "/contributors"},
-    { label: "Report Bug",   to: "https://gssoc.girlscript.org/projects/ronisarkarexe%2Fstory-spark-ai" },
+    { label: "Report Bug",   to: githubIssuesUrl },
   ];
 
 
@@ -250,24 +255,22 @@ const FooterComponent = () => {
             <span className="italic text-slate-400/60">Crafted for storytellers</span>
           </div>
           <div className="flex items-center gap-2.5">
-            {legalLinks
-              .filter((link) => link.label !== "Report a Bug")
-              .map(({ label, to }, i, filteredArray) => (
-                <span key={to} className="flex items-center gap-2">
-                  <Link to={to} className="text-slate-400/80 hover:text-blue-300">
-                    {label}
-                  </Link>
-                  {i < filteredArray.length - 1 && (
-                    <span className="text-white/[0.12]">|</span>
-                  )}
-                </span>
-              ))}
+            {legalLinks.map(({ label, to }, i) => (
+  <span key={label}>
+    <Link to={to}>
+      {label}
+    </Link>
+
+    {i < legalLinks.length - 1 && (
+      <span className="text-white/[0.12]">|</span>
+    )}
+  </span>
+))}
           </div>
 
         </div>
-
-      </div>
-    </footer>
+        </div>
+</footer>
   );
 };
 
