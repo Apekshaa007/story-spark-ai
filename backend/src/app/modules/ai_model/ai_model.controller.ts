@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { setGuestUserIdCookie } from "../../../utils/cookie.util";
 import httpStatus from "http-status";
 import ApiError from "../../../errors/api_error";
 import catchAsync from "../../../shared/catch_async";
@@ -41,7 +42,7 @@ const aiFreeModelGenerate = catchAsync(async (req: Request, res: Response) => {
 
   if (!userId) {
     userId = Math.random().toString(36).substring(7);
-    res.cookie("userId", userId, { maxAge: 30 * 24 * 60 * 60 * 1000 });
+    setGuestUserIdCookie(res, userId);  // ✅ Fixed: now includes sameSite
   }
 
   const guard = createGuestQuotaGuard(userId);
@@ -87,7 +88,7 @@ const aiFreeModelAlternateEndings = catchAsync(
 
     if (!userId) {
       userId = Math.random().toString(36).substring(7);
-      res.cookie("userId", userId, { maxAge: 30 * 24 * 60 * 60 * 1000 });
+      setGuestUserIdCookie(res, userId);  // ✅ Fixed: now includes sameSite
     }
 
     const guard = createGuestQuotaGuard(userId);
@@ -160,4 +161,3 @@ export const AiModelController = {
   aiModelTranslate,
   aiFreeModelTranslate,
 };
-
