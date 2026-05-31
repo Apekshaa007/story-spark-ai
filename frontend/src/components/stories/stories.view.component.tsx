@@ -3,6 +3,7 @@ import toast, { Toaster } from "react-hot-toast";
 import jsPDF from "jspdf";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import StoryCoverImage from "./StoryCoverImage";
 
 import {
   getShortenedText,
@@ -43,7 +44,6 @@ export class ApiError extends Error {
     this.name = "ApiError";
   }
 }
-
 function getErrorMessage(error: unknown): string {
   if (error instanceof ApiError) {
     if (error.status === 429) {
@@ -63,7 +63,6 @@ function getErrorMessage(error: unknown): string {
 
   return "An unexpected error occurred. Please try again.";
 }
-
 export interface IStories {
   uuid: string;
   title: string;
@@ -83,7 +82,6 @@ interface StoriesComponentProps {
   isLoading?: boolean;
   onPublishSuccess?: () => void;
 }
-
 interface IRelatedStoriesComponentProps {
   posts: any[];
   currentPostId: string;
@@ -198,13 +196,13 @@ const createDocxBlob = ({
   });
 };
 
-const StoryRemixModal = StoryRemix as React.ComponentType<{
-  story?: string;
-  title?: string;
-  selectedStory?: IStories;
-  onClose?: () => void;
-  onApplyRemix?: (content: string) => void;
-}>;
+          const StoryRemixModal = StoryRemix as React.ComponentType<{
+            story?: string;
+            title?: string;
+            selectedStory?: IStories;
+            onClose?: () => void;
+            onApplyRemix?: (content: string) => void;
+          }>;
 
 const StoryWorldMapModal = StoryWorldMap as React.ComponentType<{
   story?: string;
@@ -1194,22 +1192,23 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
           </div>
         </div>
 
-        <div className="col-span-1 lg:col-span-4">
+                <div className="col-span-1 lg:col-span-4">
           <div className="mb-5">
             <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-blue-400">
               Preview
             </h1>
           </div>
+
           <div className="bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden group">
             <div className="relative flex flex-col rounded-lg">
-              <div className="relative m-3 overflow-hidden text-white rounded-xl">
-                <ImageFallback
-                  src={selectedStory.imageURL}
-                  alt="card-image"
-                  className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
-              <div className="px-3 py-1">
+              <StoryCoverImage
+                title={selectedStory.title}
+                tag={selectedStory.tag}
+                image={selectedStory.imageURL}
+                className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+
+              <div className="px-3 py-3">
                 <div className="flex justify-between items-center mb-2 w-full">
                   <div className="flex items-center gap-2 flex-wrap">
                     <div className="inline-flex items-center rounded-full bg-purple-600 py-1 px-3 text-xs font-semibold text-white shadow-sm">
@@ -1222,9 +1221,14 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
                       ⏱️ {calculateReadingTime(selectedStory.content)} min read
                     </div>
                   </div>
+
                   <BookmarkButton storyId={selectedStory.uuid} />
                 </div>
-                <h6 className="mb-1 text-gray-300 text-xl font-semibold">{selectedStory.title}</h6>
+
+                <h6 className="mb-1 text-gray-300 text-xl font-semibold">
+                  {selectedStory.title}
+                </h6>
+
                 <p className="text-gray-400 font-light break-words text-sm sm:text-base">
                   {getShortenedText(selectedStory.content)}
                 </p>
@@ -1242,7 +1246,6 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
           </button>
         </div>
       </div>
-
       {showWorldMap && selectedStory && (
         <StoryWorldMapModal
           story={selectedStory.content}
