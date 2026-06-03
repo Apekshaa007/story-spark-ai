@@ -10,7 +10,7 @@ const TopHeaderComponent = () => {
           <div className="flex items-center space-x-16">
             <div className="hidden md:flex items-center space-x-8">
               <a href="/" className="flex items-center space-x-2">
-                <img src={logo} alt="Logo" className="h-8 w-auto" />
+                <img loading="lazy" src={logo} alt="Logo" className="h-8 w-auto" />
               </a>
               <a href="/" className="text-white hover:text-custom transition">
                 HOME
