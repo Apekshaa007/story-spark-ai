@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState, useRef, useMemo } from "react";
-
+import StoryCircleSkeleton from "../../components/stories/StoryCircleSkeleton";
 import { getShortenedText, ITopicData, topicsData, getWordCount, SELECTED_TOPIC_CLASSES } from "./stories.utils";
 import toast, { Toaster } from "react-hot-toast";
 import { useCreatePostMutation, useDeletePostMutation } from "../../redux/apis/post.api";
@@ -735,19 +735,17 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   };
 
   const isNarrationActive = narrationState !== "idle";
-
-
 if (isLoading) {
   return (
-    <div className="flex items-center justify-center py-20">
-      <StoryGeneratingAnimation />
+    <div className="py-20">
+      <div className="flex justify-center gap-4">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <StoryCircleSkeleton key={index} />
+        ))}
+      </div>
     </div>
   );
 }
-  if (!selectedStory) {
-    return null;
-  }
-
   return (
     <div className="mt-16 px-4 sm:px-6 lg:px-8 max-w-8xl mx-auto pb-10">
       <style>

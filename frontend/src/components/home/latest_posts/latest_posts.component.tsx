@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Post } from "../../../models/post";
 import { useGetLatestListsQuery } from "../../../redux/apis/post.api";
-import LoadingAnimation from "../../loading/loading.component";
-
+import LatestPostSkeleton from "../latest_posts/LatestPostSkeleton";
 const INITIAL_VISIBLE_COUNT = 6;
 
 const LatestPostsComponent = () => {
@@ -16,7 +15,19 @@ const LatestPostsComponent = () => {
     setShowAllPosts(false);
   }, [data?.posts]);
 
-  if (isLoading) return <LoadingAnimation />;
+  if (isLoading) {
+  return (
+    <section className="text-slate-100">
+      <h2 className="mb-6 text-2xl font-bold">Latest Posts</h2>
+
+      <div className="space-y-3">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <LatestPostSkeleton key={index} />
+        ))}
+      </div>
+    </section>
+  );
+}
 
   if (isError) {
     return (
