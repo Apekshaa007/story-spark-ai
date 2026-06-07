@@ -15,7 +15,7 @@ const toggleReaction = async (
 ) => {
   const { email } = token;
 
-  const user = await User.findOne({ email }).select("_id").lean();
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found!");

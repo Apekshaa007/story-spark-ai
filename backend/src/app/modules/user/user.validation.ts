@@ -13,7 +13,7 @@ const register = z.object({
     email: z.string({ required_error: "Email is required" }),
     name: z
       .string({ required_error: "Name is required" })
-      .min(3, "Name must be at least 3 characters long"),
+      .min(2, "Name must be at least 2 characters long"),
     password: passwordSchema,
     verificationToken: z
       .string({ required_error: "Verification token is required" })
@@ -70,10 +70,18 @@ const updateUser = z.object({
     .strict(),
 });
 
+const changePassword = z.object({
+  body: z.object({
+    oldPassword: z.string({ required_error: "Old password is required" }),
+    newPassword: passwordSchema,
+  }),
+});
+
 export const UserValidator = {
   register,
   login,
   forgotPassword,
   resetPassword,
   updateUser,
+  changePassword,
 };
