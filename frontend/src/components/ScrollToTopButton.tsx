@@ -25,10 +25,6 @@ const ScrollToTopButton = () => {
       aria-label="Scroll to top"
       style={{
         position: "fixed",
-        bottom: "5.5rem", 
-        right: "2rem",
-        width: "48px",
-        height: "48px",
         bottom: "6rem",
         right: "1.5rem",
         width: "56px",
